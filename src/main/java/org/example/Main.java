@@ -72,7 +72,7 @@ public class Main {
     private static boolean validateDateOfBirth(String dobString) {
         LocalDate dob = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDate minValidDate = LocalDate.now().minusYears(16);
-        return dobString.isEmpty() || dob.isBefore(minValidDate);
+        return !dobString.isEmpty() || dob.isAfter(minValidDate);
     }
 
 
