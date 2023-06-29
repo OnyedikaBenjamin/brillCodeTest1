@@ -9,7 +9,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 public class Main {
     private static final String SECRET_KEY = "secretkey";
-private static boolean validateFields(String username, String email, String password, String dateOfBirthString) {
+private static String validateFields(String username, String email, String password, String dateOfBirthString) {
     boolean usernameValid = false;
     boolean emailValid = false;
     boolean passwordValid = false;
@@ -52,8 +52,11 @@ private static boolean validateFields(String username, String email, String pass
     if (!dateOfBirthValid) {
         System.out.println("Date of Birth should not be empty, should be 16 years or greater)");
     }
-    return usernameValid && emailValid && passwordValid && dateOfBirthValid;
+    String token = generateToken();
+    return token;
 }
+
+
 
         private static boolean validateUsername(String username) {
             return !username.isEmpty() && username.length() >= 4;
@@ -66,7 +69,6 @@ private static boolean validateFields(String username, String email, String pass
             if (dateOfBirthString.isEmpty()) {
                 return false;
             }
-
 
             Period age;
             try {
@@ -87,6 +89,7 @@ private static boolean validateFields(String username, String email, String pass
                     .compact();
         }
 
+
         private static boolean verifyToken(String jwtToken) {
             try {
                 Jws<Claims> claimsJws = Jwts.parser()
@@ -97,6 +100,7 @@ private static boolean validateFields(String username, String email, String pass
                 return false;
             }
         }
+
         private static boolean validatePassword(String password) {
             if (password.isEmpty()) {
                 return false;
@@ -116,6 +120,7 @@ private static boolean validateFields(String username, String email, String pass
             }
             return hasUppercase && hasSpecialChar && hasNumber && password.length() >= 8;
         }
+
 
         private static boolean isSpecialCharacter(char ch) {
             String specialCharacters = "!@#$%^&*";
