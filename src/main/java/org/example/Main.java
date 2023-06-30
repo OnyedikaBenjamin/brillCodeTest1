@@ -1,21 +1,18 @@
 package org.example;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
-    private static final String SECRET_KEY = "secretkey";
-
+    private static final String SECRET_KEY = "4226452948404D635166546A576E5A7234753778214125442A462D4A614E6452";
     private static boolean validateFields(String username, String email, String password, String dateOfBirthString) {
-        boolean usernameValid = false;
-        boolean emailValid = false;
-        boolean passwordValid = false;
-        boolean dateOfBirthValid = false;
+        boolean usernameValid;
+        boolean emailValid;
+        boolean passwordValid;
+        boolean dateOfBirthValid;
 
         usernameValid = validateUsername(username);
         if (!usernameValid) {
@@ -72,15 +69,25 @@ public class Main {
     private static boolean validateDateOfBirth(String dobString) {
         LocalDate dob = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE);
         LocalDate minValidDate = LocalDate.now().minusYears(16);
-        return !dobString.isEmpty() && dob.isAfter(minValidDate);
+        return !dobString.isEmpty() && dob.isBefore(minValidDate);
     }
 
 
-    private static String generateToken() {
-        return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
-    }
+
+        public static String generateToken(String username, String email) {
+            long currentTimeMillis = System.currentTimeMillis();
+            Date now = new Date(currentTimeMillis);
+
+            JwtBuilder builder = Jwts.builder()
+                    .setId(username)
+                    .setSubject(email)
+                    .setIssuedAt(now)
+                    .setExpiration(new Date(currentTimeMillis + 86400000))
+                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY);
+
+            return builder.compact();
+        }
+
 
     private static boolean verifyToken(String jwtToken) {
         try {
@@ -137,7 +144,7 @@ public class Main {
         boolean validationPassed = validateFields(username, email, password, dateOfBirthString);
 
         if (validationPassed) {
-            String token = generateToken();
+            String token = generateToken(username, email);
             System.out.println("Validation successful! JWT token: " + token);
 
             System.out.print("Enter the JWT token for verification: ");
